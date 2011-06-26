@@ -21,6 +21,7 @@
 
 #include "Funkuhr.h"
 
+
 #define DCF77PIN 2                     // Input pin for the DCF receiver
 #define BLINKPIN 13                    // LED indicator output
 
@@ -91,7 +92,7 @@ void int0handler()
 
 
 // Initialize the variables and configure the interrupt behaviour.
-void init() 
+void Funkuhr::init() 
 {
 	previousSignalState = 0;
 	previousFlankTime = 0;
@@ -115,6 +116,12 @@ void init()
 	RESET_TIMER2;
 	
 	attachInterrupt(0, int0handler, CHANGE);
+}
+
+// Constructor
+Funkuhr::Funkuhr() 
+{
+	init();
 }
 
 
@@ -254,7 +261,7 @@ ISR(TIMER2_OVF_vect) {
 };
 	
 
-void getTime(DateTime& dt) 
+void Funkuhr::getTime(DateTime& dt) 
 {
 	if (ss != previousSecond) {	
 

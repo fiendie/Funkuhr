@@ -19,10 +19,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WProgram.h"
+#include <WProgram.h>
 
 
-struct DateTime
+#ifndef Funkuhr_h
+#define Funkuhr_h
+
+struct Dcf77Time
 {
 	unsigned char sec;
 	unsigned char min;
@@ -33,15 +36,12 @@ struct DateTime
 };
 
 
-#ifndef Funkuhr_h
-#define Funkuhr_h
-
 class Funkuhr
 {
-  public:
-    Funkuhr();
-    void init();
-    void getTime(DateTime& dt);
+	public:
+		void getTime(Dcf77Time& dt);
+	private:
+		void init();
 };
 
 #endif
