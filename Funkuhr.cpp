@@ -102,17 +102,27 @@ void Funkuhr::init()
 	
 	pinMode(DCF77PIN, INPUT);
 
-	//Timer2 Settings: Timer Prescaler /64, 
-	TCCR2B |= (1<<CS22);    					// Turn on CS22 bit
-	TCCR2B &= ~((1<<CS21) | (1<<CS20));    // Turn off CS21 and CS20 bits   
+	/**
+	 * Timer2 Settings: Timer Prescaler /64,
+	 */
+	
+	// Turn on CS22 bit 
+	TCCR2B |= (1<<CS22);					
+		
+	// Turn off CS21 and CS20 bits   
+	TCCR2B &= ~((1<<CS21) | (1<<CS20));	
 
-	// Use normal mode
-	TCCR2A &= ~((1<<WGM21) | (1<<WGM20));	// Turn off WGM21 and WGM20 bits 
-	TCCR2B &= ~(1<<WGM22);						// Turn off WGM22
+	// Turn off WGM21 and WGM20 bits 
+	TCCR2A &= ~((1<<WGM21) | (1<<WGM20)); 
+	
+	// Turn off WGM22
+	TCCR2B &= ~(1<<WGM22); 
 
 	// Use internal clock
 	ASSR |= (0<<AS2);
-	TIMSK2 |= (1<<TOIE2) | (0<<OCIE2A);		// Timer2 Overflow Interrupt Enable  
+	
+	// Timer2 Overflow Interrupt Enable  
+	TIMSK2 |= (1<<TOIE2) | (0<<OCIE2A);
 	RESET_TIMER2;
 	
 	attachInterrupt(0, int0handler, CHANGE);
@@ -136,16 +146,16 @@ void finalizeBuffer(void)
 		struct DCF77Buffer *rx_buffer;
 		rx_buffer = (struct DCF77Buffer *)(unsigned long long)&dcf_rx_buffer;
 
-		if (flags.parity_min  == rx_buffer->P1 && 
+		if (flags.parity_min == rx_buffer->P1 && 
 			 flags.parity_hour == rx_buffer->P2 && 
 			 flags.parity_date == rx_buffer->P3) 
 		{ 
 			// Convert the received bits from BCD to decimal
-			mm		= rx_buffer->Min-((rx_buffer->Min/16)*6);
-			hh		= rx_buffer->Hour-((rx_buffer->Hour/16)*6);
-			day	= rx_buffer->Day-((rx_buffer->Day/16)*6); 
-			mon	= rx_buffer->Month-((rx_buffer->Month/16)*6);
-			year	= 2000 + rx_buffer->Year-((rx_buffer->Year/16)*6);
+			mm = rx_buffer->Min-((rx_buffer->Min/16)*6);
+			hh = rx_buffer->Hour-((rx_buffer->Hour/16)*6);
+			day = rx_buffer->Day-((rx_buffer->Day/16)*6); 
+			mon = rx_buffer->Month-((rx_buffer->Month/16)*6);
+			year = 2000 + rx_buffer->Year-((rx_buffer->Year/16)*6);
 		}
 	} 
 
