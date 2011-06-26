@@ -39,8 +39,8 @@ struct Dcf77Time
 class Funkuhr
 {
 	public:
+  		Funkuhr();
 		void getTime(Dcf77Time& dt);
-	private:
 		void init();
 };
 

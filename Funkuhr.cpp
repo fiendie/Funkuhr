@@ -121,7 +121,7 @@ void Funkuhr::init()
 // Constructor
 Funkuhr::Funkuhr() 
 {
-	init();
+	
 }
 
 
@@ -261,28 +261,28 @@ ISR(TIMER2_OVF_vect) {
 };
 	
 
-void Funkuhr::getTime(DateTime& dt) 
+void Funkuhr::getTime(Dcf77Time& dt) 
 {
 	if (ss != previousSecond) {	
 
 		dt.sec = ss;
-		dt.min = mm;
-		dt.hour = hh;
-		dt.day = day;
-		dt.month = month;
-		dt.year = year;
+		
+		if(dt.min != mm)
+			dt.min = mm;
+			
+		if(dt.hour != hh)
+			dt.hour = hh;
+		
+		if(dt.day != day)	
+			dt.day = day;
+		
+		if(dt.month != mon) 	
+			dt.month = mon;
+			
+		if(dt.year != year)
+			dt.year = year;
 		
 		previousSecond = ss;
-	}
-
-	else 
-	{
-		dt.sec = 0;
-		dt.min = 0;
-		dt.hour = 0;
-		dt.day = 0;
-		dt.month = 0;
-		dt.year = 0;
 	}
 	
 	if (DCFSignalState != previousSignalState) {
