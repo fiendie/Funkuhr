@@ -1,0 +1,34 @@
+This library is for decoding the DCF77 time signal broadcasted
+by the german PTB (Physikalisch-Technische Bundesanstalt) in Mainflingen.
+
+To be able to use this code you have to hook up a special DCF77 receiver 
+to your Arduino. I used the one sold be german electronics retailer Reichelt.
+
+Unfortunately the Reichelt module has a very weak push-pull output which only
+provides around +/- 5uA. 
+
+To get usable readings out of it I used the following circuit:
+                                 ____ 
+                            +---|____|---> +5V
+                            |    R3
+                            |
+         ____     |/c-------+------------o PIN2
+SIG o---|____|---b|
+          R1      |\e-------+
+                            |
+                            |    ____
+VDD o---+-------+-------+---|---|____|---o +5V
+        |       |       |   |    R2
+       _|_     _|_     _|_  |
+    D1 / \  C1 ___  C2 ___  |
+        |       |       |   |
+GND o---+-------+-------+---+-----------o GND
+
+D1: 3.9 Z-Diode 
+C1: 100n Ceramic Capacitor
+C2: 100u Electrolytic Capacitor
+R1: 120k Resistor
+R2: 2.2k Resistor
+R3: 10k Resistor
+
+To amplify the signal there is a Transistor between R1 and PIN2.
