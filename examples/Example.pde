@@ -11,9 +11,11 @@ uint8_t curSec;
 
 void dumpTime(void)
 {	
-	Serial.println("DCF77 Time \n ");
+	Serial.println("DCF77 Time");
 
 	// Print date
+	Serial.print(" ");
+
 	if(dt.day < 10)
 		Serial.print("0");
 	Serial.print(dt.day, DEC);
@@ -37,45 +39,34 @@ void dumpTime(void)
 	
 	if(dcf.synced()) 
 	{
-		Serial.print("\n ");
+		Serial.println(" ");
+		Serial.print(" ");
 	}
 	else 
 	{
-		Serial.print("\n~");
+		Serial.println(" ");
+		Serial.print("~");
 	}
 	
-	// Print Time with flashing separator		
+	// Print Time 
 	if (dt.hour < 10) 
 		Serial.print("0");
 	
 	Serial.print(dt.hour, DEC);
-
-	if ((dt.sec % 2) == 0) 
-		Serial.print(":");
-	} 
-	else 
-	{
-		Serial.print(" ");
-	}
+	Serial.print(":");
 	
 	if (dt.min < 10) 
 		Serial.print("0");
 	
 	Serial.print(dt.min, DEC);
-	
-	if ((dt.sec % 2) == 0) 
-	{
-		Serial.print(":");
-	}
-	else 
-	{
-		Serial.print(" ");
-	}
+	Serial.print(":");
 	
 	if (dt.sec < 10) 
 		Serial.print("0");
 
 	Serial.println(dt.sec, DEC);
+	
+	Serial.println(" ");
 }
 
 
