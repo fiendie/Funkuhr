@@ -4,18 +4,14 @@
 #include "Funkuhr.h"
 
 Funkuhr dcf;
-struct Dcf77Time dt = {0};
+struct Dcf77Time dt = { 0 };
 
-unsigned char curSec;
+uint8_t curSec;
 
 
 void dumpTime(void)
 {	
-	Serial.println("DCF77 Time");
-	Serial.print(" ");
-
-	if (dt.day < 10) 
-		Serial.print(" ");	
+	Serial.println("DCF77 Time \n ");
 
 	// Print date
 	if(dt.day < 10)
@@ -38,7 +34,15 @@ void dumpTime(void)
 	}	
 
 	Serial.print(dt.year, DEC);
-	Serial.print(" ");
+	
+	if(dcf.synced()) 
+	{
+		Serial.print("\n ");
+	}
+	else 
+	{
+		Serial.print("\n~");
+	}
 	
 	// Print Time with flashing separator		
 	if (dt.hour < 10) 
