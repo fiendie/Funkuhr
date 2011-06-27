@@ -1,3 +1,5 @@
+INTRODUCTION
+
 This library is for decoding the DCF77 time signal broadcasted
 by the german PTB (Physikalisch-Technische Bundesanstalt) in Mainflingen.
 
@@ -34,7 +36,17 @@ R1: 120k Resistor
 R2: 2.2k Resistor
 R3: 10k Resistor
 
-To amplify the signal there is a Transistor between R1 and PIN2.
+To amplify the signal there is a 2N2222 Transistor between R1 and PIN2.
+
+
+INSTALLATION 
+
+For a tutorial on how to install new libraries for use with the Arduino
+development environment please refer to the following website:
+http://www.arduino.cc/en/Reference/Libraries
+
+
+USAGE
 
 This library assumes that you have SIG hooked up to Arduino's PIN2.
 The reason for this is that most Arduino boards have two external interrupts: 
