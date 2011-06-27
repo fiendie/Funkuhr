@@ -160,7 +160,7 @@ void finalizeBuffer(void)
 			hh = rx_buffer->Hour-((rx_buffer->Hour/16)*6);
 			day = rx_buffer->Day-((rx_buffer->Day/16)*6); 
 			mon = rx_buffer->Month-((rx_buffer->Month/16)*6);
-			year = 2000 + rx_buffer->Year-((rx_buffer->Year/16)*6);
+			year = rx_buffer->Year-((rx_buffer->Year/16)*6);
 		}
 	} 
 
@@ -326,16 +326,20 @@ void Funkuhr::getTime(Dcf77Time& dt)
 
 /**
  * Does a plausibility check of the current time signature.
- * Returns 0 if the last sync is older than a minute or 
+ * Returns 0 if the last sync is older than two minutes or 
  * if there hasn't been a successful sync yet.
  */
 uint8_t Funkuhr::synced() 
 {
-	if(day == 0 || mon == 0)
+	if(day == 0 || mon == 0) 
+	{
 		return 0;
-		
-	if(millis() > currentSync + 60 * 1000) 
+	}	
+	else if(millis() - currentSync > (120 * 1000)) 
+	{	
 		return 0;
-	
-	return 1;
+	}
+	else {
+		return 1;
+	}
 }
