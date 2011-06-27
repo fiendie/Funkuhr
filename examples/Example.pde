@@ -4,7 +4,7 @@
 #include "Funkuhr.h"
 
 Funkuhr dcf;
-Dcf77Time dt;
+struct Dcf77Time dt = {0};
 
 unsigned char curSec;
 
@@ -12,7 +12,7 @@ unsigned char curSec;
 void dumpTime(void)
 {	
 	Serial.println("DCF77 Time");
-	Serial.print("  ");
+	Serial.print(" ");
 
 	if (dt.day < 10) 
 		Serial.print(" ");	
@@ -28,7 +28,7 @@ void dumpTime(void)
 	Serial.print(dt.month, DEC);
 	Serial.print(".");
 	
-	if(year == 0)
+	if(dt.year == 0)
 	{
 		Serial.print("000")
 	}

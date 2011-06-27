@@ -78,7 +78,7 @@ volatile unsigned char mm;
 volatile unsigned char hh;
 volatile unsigned char day;
 volatile unsigned char mon;
-volatile unsigned int year;
+volatile unsigned char year;
 
 unsigned char previousSecond;
 
