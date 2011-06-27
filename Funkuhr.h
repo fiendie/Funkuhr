@@ -27,12 +27,12 @@
 
 struct Dcf77Time
 {
-	unsigned char sec;
-	unsigned char min;
-	unsigned char hour;
-	unsigned char day;
-	unsigned char month;
-	unsigned char year;
+	uint8_t sec;
+	uint8_t min;
+	uint8_t hour;
+	uint8_t day;
+	uint8_t month;
+	uint8_t year;
 };
 
 
@@ -40,8 +40,9 @@ class Funkuhr
 {
 	public:
   		Funkuhr();
-		void getTime(Dcf77Time& dt);
 		void init();
+		void getTime(Dcf77Time& dt);
+		uint8_t synced();
 };
 
 #endif

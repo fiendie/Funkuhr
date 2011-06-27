@@ -2,7 +2,7 @@
  * Funkuhr.cpp - Library for interacting with DCF77 radio clock modules.
  * 
  * Based on the Arduino DCF77 decoder v0.2 by Mathias Dalheimer (md@gonium.net).
- * Adapted by Andreas Tacke (at@mail.fiendie.net)
+ * Adapted by Andreas Tacke (at@mail.fiendie.net).
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,34 +56,37 @@ struct DCF77Buffer
 
 
 // Parity struct 
-struct 
+struct
 {
-	unsigned char parity_flag	:1;
-	unsigned char parity_min	:1;
-	unsigned char parity_hour	:1;
-	unsigned char parity_date	:1;
+	uint8_t parity_flag	:1;
+	uint8_t parity_min	:1;
+	uint8_t parity_hour	:1;
+	uint8_t parity_date	:1;
 } flags;
 
 
 // Clock variables 
-volatile unsigned char DCFSignalState = 0;  
-unsigned char previousSignalState;
+volatile uint8_t DCFSignalState = 0;  
+uint8_t previousSignalState;
 int previousFlankTime;
 int bufferPosition;
 unsigned long long dcf_rx_buffer;
 
 // Time variables
-volatile unsigned char ss;
-volatile unsigned char mm;
-volatile unsigned char hh;
-volatile unsigned char day;
-volatile unsigned char mon;
-volatile unsigned char year;
+volatile uint8_t ss;
+volatile uint8_t mm;
+volatile uint8_t hh;
+volatile uint8_t day;
+volatile uint8_t mon;
+volatile uint8_t year;
 
-unsigned char previousSecond;
+uint8_t previousSecond;
+unsigned long currentSync = 0;
 
 
-// Interrupt handler for INT0. Called when the signal on Pin 2 changes. 
+/**
+ * Interrupt handler for INT0. Called when the signal on Pin 2 changes. 
+ */
 void int0handler() 
 {		
 	// Inverted because the signal is fed through a transistor 
@@ -91,7 +94,9 @@ void int0handler()
 }
 
 
-// Initialize the variables and configure the interrupt behaviour.
+/**
+ * Initialize the variables and configure the interrupt behaviour.
+ */
 void Funkuhr::init() 
 {
 	previousSignalState = 0;
@@ -102,9 +107,7 @@ void Funkuhr::init()
 	
 	pinMode(DCF77PIN, INPUT);
 
-	/**
-	 * Timer2 Settings: Timer Prescaler /64,
-	 */
+	// Timer2 Settings: Timer Prescaler /64,
 	
 	// Turn on CS22 bit 
 	TCCR2B |= (1<<CS22);					
@@ -128,7 +131,9 @@ void Funkuhr::init()
 	attachInterrupt(0, int0handler, CHANGE);
 }
 
-// Constructor
+/**
+ * Constructor
+ */
 Funkuhr::Funkuhr() 
 {
 	
@@ -162,6 +167,8 @@ void finalizeBuffer(void)
 	ss = 0;
 	bufferPosition = 0;
 	dcf_rx_buffer=0;
+	
+	currentSync = millis();
 }
 
 
@@ -170,7 +177,7 @@ void finalizeBuffer(void)
  * counter shifts the writing position within the buffer. If position > 59,
  * a new minute begins -> time to call finalizeBuffer(). 
  */
-void appendSignal(unsigned char signal) 
+void appendSignal(uint8_t signal) 
 {
 	dcf_rx_buffer = dcf_rx_buffer | ((unsigned long long) signal << bufferPosition);
 
@@ -198,7 +205,9 @@ void appendSignal(unsigned char signal)
 }
 
 
-// Evaluates the signal as it is received. 
+/**
+ * Evaluates the signal as it is received. 
+ */
 void scanSignal(void)
 { 
 	if (DCFSignalState == 1) 
@@ -239,7 +248,9 @@ void scanSignal(void)
 }
 
 
-// The interrupt routine for counting seconds - increment hh:mm:ss.
+/**
+ * The interrupt routine for counting seconds - increment hh:mm:ss.
+ */
 ISR(TIMER2_OVF_vect) {
 	RESET_TIMER2;
 	tick_counter += 1;
@@ -271,15 +282,18 @@ ISR(TIMER2_OVF_vect) {
 };
 	
 
+/**
+ * Fills the given struct with the current time signature.
+ */
 void Funkuhr::getTime(Dcf77Time& dt) 
 {
 	if (ss != previousSecond) {	
 
 		dt.sec = ss;
 		
-		if(dt.min != mm)
+		if(dt.min != mm) 
 			dt.min = mm;
-			
+		
 		if(dt.hour != hh)
 			dt.hour = hh;
 		
@@ -307,4 +321,21 @@ void Funkuhr::getTime(Dcf77Time& dt)
 		
 		previousSignalState = DCFSignalState;
 	}
+}
+
+
+/**
+ * Does a plausibility check of the current time signature.
+ * Returns 0 if the last sync is older than a minute or 
+ * if there hasn't been a successful sync yet.
+ */
+uint8_t Funkuhr::synced() 
+{
+	if(day == 0 || mon == 0)
+		return 0;
+		
+	if(millis() > currentSync + 60 * 1000) 
+		return 0;
+	
+	return 1;
 }
