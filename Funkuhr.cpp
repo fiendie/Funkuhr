@@ -40,8 +40,7 @@ int tick_counter = 0;
 
 
 // DCF time format struct 
-struct DCF77Buffer 
-{
+struct DCF77Buffer  {
 	unsigned long long prefix	:21;
 	unsigned long long Min		:7;	// minutes
 	unsigned long long P1		:1;	// parity minutes
@@ -56,8 +55,7 @@ struct DCF77Buffer
 
 
 // Parity struct 
-struct
-{
+struct {
 	uint8_t parity_flag	:1;
 	uint8_t parity_min	:1;
 	uint8_t parity_hour	:1;
@@ -87,8 +85,7 @@ unsigned long currentSync = 0;
 /**
  * Interrupt handler for INT0. Called when the signal on Pin 2 changes. 
  */
-void int0handler() 
-{		
+void int0handler() {		
 	// Inverted because the signal is fed through a transistor 
 	DCFSignalState = !digitalRead(DCF77PIN);
 }
@@ -97,8 +94,7 @@ void int0handler()
 /**
  * Initialize the variables and configure the interrupt behaviour.
  */
-void Funkuhr::init() 
-{
+void Funkuhr::init() {
 	previousSignalState = 0;
 	previousFlankTime = 0;
 	bufferPosition = 0;
@@ -134,8 +130,7 @@ void Funkuhr::init()
 /**
  * Constructor
  */
-Funkuhr::Funkuhr() 
-{
+Funkuhr::Funkuhr() {
 	
 }
 
@@ -144,23 +139,18 @@ Funkuhr::Funkuhr()
  * Evaluates the information stored in the buffer. This is where the DCF77
  * signal is decoded and the internal clock is updated.
  */
-void finalizeBuffer(void) 
-{
-	if (bufferPosition == 59) 
-	{
+void finalizeBuffer(void) {
+	if (bufferPosition == 59) {
 		struct DCF77Buffer *rx_buffer;
 		rx_buffer = (struct DCF77Buffer *)(unsigned long long)&dcf_rx_buffer;
 
-		if (flags.parity_min == rx_buffer->P1 && 
-			 flags.parity_hour == rx_buffer->P2 && 
-			 flags.parity_date == rx_buffer->P3) 
-		{ 
+		if (flags.parity_min == rx_buffer->P1 && flags.parity_hour == rx_buffer->P2 && flags.parity_date == rx_buffer->P3) { 
 			// Convert the received bits from BCD to decimal
-			mm = rx_buffer->Min-((rx_buffer->Min/16)*6);
-			hh = rx_buffer->Hour-((rx_buffer->Hour/16)*6);
-			day = rx_buffer->Day-((rx_buffer->Day/16)*6); 
-			mon = rx_buffer->Month-((rx_buffer->Month/16)*6);
-			year = rx_buffer->Year-((rx_buffer->Year/16)*6);
+			mm		= rx_buffer->Min-((rx_buffer->Min/16)*6);
+			hh		= rx_buffer->Hour-((rx_buffer->Hour/16)*6);
+			day 	= rx_buffer->Day-((rx_buffer->Day/16)*6); 
+			mon		= rx_buffer->Month-((rx_buffer->Month/16)*6);
+			year	= rx_buffer->Year-((rx_buffer->Year/16)*6);
 		}
 	} 
 
@@ -177,13 +167,11 @@ void finalizeBuffer(void)
  * counter shifts the writing position within the buffer. If position > 59,
  * a new minute begins -> time to call finalizeBuffer(). 
  */
-void appendSignal(uint8_t signal) 
-{
+void appendSignal(uint8_t signal) {
 	dcf_rx_buffer = dcf_rx_buffer | ((unsigned long long) signal << bufferPosition);
 
 	// Update the parity bits. First: Reset when minute, hour or date starts.
-	if (bufferPosition ==  21 || bufferPosition ==  29 || bufferPosition ==  36) 
-	{
+	if (bufferPosition ==  21 || bufferPosition ==  29 || bufferPosition ==  36) {
 		flags.parity_flag = 0;
 	}
 	
@@ -193,8 +181,7 @@ void appendSignal(uint8_t signal)
 	if (bufferPosition ==  58) { flags.parity_date = flags.parity_flag; };
 
 	// When we received a 1, toggle the parity flag
-	if (signal == 1) 
-	{
+	if (signal == 1) {
 		flags.parity_flag = flags.parity_flag ^ 1;
 	}
 	
@@ -208,19 +195,14 @@ void appendSignal(uint8_t signal)
 /**
  * Evaluates the signal as it is received. 
  */
-void scanSignal(void)
-{ 
-	if (DCFSignalState == 1) 
-	{
+void scanSignal(void) {
+	if (DCFSignalState == 1) {
 		int thisFlankTime = millis();
 
-		if (thisFlankTime - previousFlankTime > DCF_sync_millis) 
-		{
+		if (thisFlankTime - previousFlankTime > DCF_sync_millis) {
 			finalizeBuffer();
 		}
-
-		else if (thisFlankTime - previousFlankTime < 300) 
-		{
+		else if (thisFlankTime - previousFlankTime < 300) {
 			bufferPosition--;
 
 			if (bufferPosition < 0)
@@ -230,18 +212,13 @@ void scanSignal(void)
 		if (thisFlankTime - previousFlankTime > 300)	
 			previousFlankTime = thisFlankTime;
 	} 
-
-	else 
-	{
+	else {
 		int difference = millis() - previousFlankTime;
 
-		if (difference < DCF_split_millis) 
-		{
+		if (difference < DCF_split_millis) {
 			appendSignal(0);
 		}
-		 
-		else 
-		{
+		else {
 			appendSignal(1);
 		}
 	}
@@ -255,25 +232,20 @@ ISR(TIMER2_OVF_vect) {
 	RESET_TIMER2;
 	tick_counter += 1;
 
-	if (tick_counter == 1000) 
-	{
+	if (tick_counter == 1000) {
 		ss++;
 
-		if (ss==60) 
-		{
+		if (ss==60) {
 			ss=0;
 			mm++;
 
-			if (mm==60) 
-			{
+			if (mm==60) {
 				mm=0;
 				hh++;
 
-				if (hh==24)
-				{
+				if (hh==24) {
 					hh=0;
 				} 
-
 			}
 		}
 
@@ -329,14 +301,11 @@ void Funkuhr::getTime(Dcf77Time& dt)
  * Returns 0 if the last sync is older than two minutes or 
  * if there hasn't been a successful sync yet.
  */
-uint8_t Funkuhr::synced() 
-{
-	if(day == 0 || mon == 0) 
-	{
+uint8_t Funkuhr::synced() {
+	if(day == 0 || mon == 0) {
 		return 0;
 	}	
-	else if(millis() - currentSync > (120 * 1000)) 
-	{	
+	else if(millis() - currentSync > (120 * 1000)) {	
 		return 0;
 	}
 	else {

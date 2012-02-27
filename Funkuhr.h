@@ -19,14 +19,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <WProgram.h>
+#if ARDUINO >= 100
+	#include "Arduino.h"
+#else
+	#include "WProgram.h"
+#endif
 
 
 #ifndef Funkuhr_h
 #define Funkuhr_h
 
-struct Dcf77Time
-{
+
+struct Dcf77Time {
 	uint8_t sec;
 	uint8_t min;
 	uint8_t hour;
@@ -36,8 +40,7 @@ struct Dcf77Time
 };
 
 
-class Funkuhr
-{
+class Funkuhr {
 	public:
   		Funkuhr();
 		void init();
