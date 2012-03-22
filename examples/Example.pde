@@ -28,11 +28,11 @@ void dumpTime(void)
 	
 	if(dt.year == 0)
 	{
-		Serial.print("000")
+		Serial.print("000");
 	}
 	else
 	{
-		Serial.print("20")
+		Serial.print("20");
 	}	
 
 	Serial.print(dt.year, DEC);
@@ -73,7 +73,7 @@ void dumpTime(void)
 void setup(void) 
 {
 	Serial.begin(9600);
-	lcd.begin(20, 4);
+	//lcd.begin(20, 4);
 	dcf.init();
 }
 
