@@ -22,9 +22,6 @@
 #include "Funkuhr.h"
 
 
-#define DCF77PIN 2                     // Input pin for the DCF receiver
-#define BLINKPIN 13                    // LED indicator output
-
 #define DCF_split_millis 140           // Number of milliseconds before we assume a logic 1
 #define DCF_sync_millis 1200           // No signal at second 59
 
@@ -37,6 +34,12 @@
 #define INIT_TIMER_COUNT 6
 #define RESET_TIMER2 TCNT2 = INIT_TIMER_COUNT
 int tick_counter = 0;
+
+
+static uint8_t m_intNumber = 0;
+static uint8_t m_dcf77Pin = 2;
+static uint8_t m_blinkPin = 13;
+static bool m_invertedSignal = false;
 
 
 // DCF time format struct 
@@ -83,11 +86,11 @@ unsigned long currentSync = 0;
 
 
 /**
- * Interrupt handler for INT0. Called when the signal on Pin 2 changes. 
+ * Interrupt handler. Called when the signal on interrupt pin changes. 
  */
-void int0handler() {		
-	// Inverted because the signal is fed through a transistor 
-	DCFSignalState = !digitalRead(DCF77PIN);
+void inthandler() {		
+    uint8_t signalState = digitalRead(m_dcf77Pin);
+    DCFSignalState = (!m_invertedSignal) ? signalState : !signalState;
 }
 
 
@@ -101,7 +104,7 @@ void Funkuhr::init() {
 	dcf_rx_buffer = 0;
 	ss = mm = hh =day = mon = year = 0;
 	
-	pinMode(DCF77PIN, INPUT);
+	pinMode(m_dcf77Pin, INPUT);
 
 	// Timer2 Settings: Timer Prescaler /64,
 	
@@ -124,14 +127,17 @@ void Funkuhr::init() {
 	TIMSK2 |= (1<<TOIE2) | (0<<OCIE2A);
 	RESET_TIMER2;
 	
-	attachInterrupt(0, int0handler, CHANGE);
+	attachInterrupt(m_intNumber, inthandler, CHANGE);
 }
 
 /**
  * Constructor
  */
-Funkuhr::Funkuhr() {
-	
+Funkuhr::Funkuhr(uint8_t intNumber, uint8_t dcf77Pin, uint8_t blinkPin, bool invertedSignal) {
+    m_intNumber = intNumber;
+    m_dcf77Pin = dcf77Pin;
+    m_blinkPin = blinkPin;
+    m_invertedSignal = invertedSignal;
 }
 
 
@@ -285,10 +291,10 @@ void Funkuhr::getTime(Dcf77Time& dt)
 		scanSignal();
 
 		if (DCFSignalState) {
-			digitalWrite(BLINKPIN, HIGH);
+			digitalWrite(m_blinkPin, HIGH);
 		} 
 		else {
-			digitalWrite(BLINKPIN, LOW);
+			digitalWrite(m_blinkPin, LOW);
 		}
 		
 		previousSignalState = DCFSignalState;
