@@ -3,7 +3,7 @@
  */
 #include "Funkuhr.h"
 
-Funkuhr dcf;
+Funkuhr dcf(0, 2, 13, false);
 struct Dcf77Time dt = { 0 };
 
 uint8_t curSec;
@@ -73,7 +73,6 @@ void dumpTime(void)
 void setup(void) 
 {
 	Serial.begin(9600);
-	//lcd.begin(20, 4);
 	dcf.init();
 }
 

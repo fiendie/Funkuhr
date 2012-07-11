@@ -42,7 +42,7 @@ struct Dcf77Time {
 
 class Funkuhr {
 	public:
-  		Funkuhr();
+  		Funkuhr(uint8_t intNumber = 0, uint8_t dcf77Pin = 2, uint8_t blinkPin = 13, bool invertedSignal = false);
 		void init();
 		void getTime(Dcf77Time& dt);
 		uint8_t synced();

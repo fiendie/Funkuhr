@@ -6,13 +6,13 @@
 # Datatypes (KEYWORD1)
 ####################################
 
-Funkuhr		KEYWORD1
-
+Funkuhr	KEYWORD1
+Dcf77Time	KEYWORD1
 
 ####################################
 # Methods and Functions (KEYWORD2)
 ####################################
 
-init		KEYWORD2
-getTime		KEYWORD2
-synced		KEYWORD2
+init	KEYWORD2
+getTime	KEYWORD2
+synced	KEYWORD2
