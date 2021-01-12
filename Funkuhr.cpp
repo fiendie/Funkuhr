@@ -263,8 +263,7 @@ ISR(TIMER2_OVF_vect) {
 /**
  * Fills the given struct with the current time signature.
  */
-void Funkuhr::getTime(Dcf77Time& dt) 
-{
+void Funkuhr::getTime(Dcf77Time& dt) {
 	if (ss != previousSecond) {	
 
 		dt.sec = ss;
