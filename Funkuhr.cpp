@@ -158,13 +158,13 @@ void finalizeBuffer(void) {
 			mon		= rx_buffer->Month-((rx_buffer->Month/16)*6);
 			year	= rx_buffer->Year-((rx_buffer->Year/16)*6);
 		}
+		currentSync = millis();
 	} 
 
 	ss = 0;
 	bufferPosition = 0;
 	dcf_rx_buffer=0;
 	
-	currentSync = millis();
 }
 
 
@@ -263,8 +263,7 @@ ISR(TIMER2_OVF_vect) {
 /**
  * Fills the given struct with the current time signature.
  */
-void Funkuhr::getTime(Dcf77Time& dt) 
-{
+void Funkuhr::getTime(Dcf77Time& dt) {
 	if (ss != previousSecond) {	
 
 		dt.sec = ss;
@@ -308,10 +307,12 @@ void Funkuhr::getTime(Dcf77Time& dt)
  * if there hasn't been a successful sync yet.
  */
 uint8_t Funkuhr::synced() {
+	unsigned long syncDelay = (millis() - currentSync);
+	
 	if(day == 0 || mon == 0) {
 		return 0;
 	}	
-	else if(millis() - currentSync > (120 * 1000)) {	
+	else if(syncDelay > 120000) {	
 		return 0;
 	}
 	else {
