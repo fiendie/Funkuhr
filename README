@@ -6,6 +6,8 @@ by the german PTB (Physikalisch-Technische Bundesanstalt) in Mainflingen.
 I used the sample code written by Matthias Dalheimer (md@gonium.net) and 
 adapted it so that it can be used as a library in other Arduino projects.
 
+Modified by Maciej Baur (mbaur@wp.pl) to fix synced() function behavior.
+
 To be able to use this code you have to hook up a special DCF77 receiver 
 to your Arduino. I used the one sold be german electronics retailer Reichelt.
 
